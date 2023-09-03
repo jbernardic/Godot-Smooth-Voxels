@@ -1,1 +1,2 @@
-# Smooth voxels in Godot using Marching Cubes algorithm
+# Marching Cubes in Godot
+Implemented in GDScript.
