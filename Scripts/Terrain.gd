@@ -280,6 +280,7 @@ class VoxelGrid:
 	func _init(resolution: int):
 		self.resolution = resolution
 		self.data.resize(resolution*resolution*resolution)
+		self.data.fill(1.0)
 	
 	func read(x: int, y: int, z: int):
 		return self.data[x + self.resolution * (y + self.resolution * z)]
