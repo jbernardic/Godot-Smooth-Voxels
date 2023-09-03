@@ -1,7 +1,17 @@
+@tool
 extends MeshInstance3D
 
-@export	 var material:Material
-@export var isolevel:float 
+@export	var MATERIAL:Material
+@export var RESOLUTION: = 50
+@export var ISO_LEVEL = 0.0
+@export var NOISE: FastNoiseLite
+
+@export var GENERATE: bool:
+	set(value):
+		var time = Time.get_ticks_msec()
+		generate()
+		var elapsed = (Time.get_ticks_msec()-time)/1000.0
+		print("Terrain generated in: " + str(elapsed) + "s")
 
 const TRIANGULATIONS = [
 [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -300,23 +310,19 @@ const EDGES = [
 	Vector2i(2, 6),
 	Vector2i(3, 7),
 ]
-
-const ISO_LEVEL = 1.0
-
-func _ready():
-	generate()
 	
 func scalar_field(x:float, y:float, z:float):
 	return (x * x + y * y + z * z)/60.0
 
 func generate():
-	var voxel_grid = VoxelGrid.new(20)
-	
-	#generate data of a sphere
-	for x in voxel_grid.resolution:
-		for y in voxel_grid.resolution:
-			for z in voxel_grid.resolution:
-				voxel_grid.write(x, y, z, scalar_field(x-10, y-10, z-10))
+	var voxel_grid = VoxelGrid.new(RESOLUTION)
+	#generate terrain
+	for x in range(1, voxel_grid.resolution-1):
+		for y in range(1, voxel_grid.resolution-1):
+			for z in range(1, voxel_grid.resolution-1):
+				var posy = (y+y%2 )/float(voxel_grid.resolution)
+				var value = posy+NOISE.get_noise_3d(x, y, z)
+				voxel_grid.write(x, y, z, value)
 	
 	#march
 	var vertices = PackedVector3Array()
@@ -337,7 +343,7 @@ func generate():
 	
 	surface_tool.generate_normals()
 	surface_tool.index()
-	surface_tool.set_material(material)
+	surface_tool.set_material(MATERIAL)
 	mesh = surface_tool.commit()
 		
 func march_cube(x:int, y:int, z:int, voxel_grid:VoxelGrid, vertices:PackedVector3Array):
