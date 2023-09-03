@@ -2,10 +2,11 @@
 extends MeshInstance3D
 
 @export	var MATERIAL:Material
-@export var RESOLUTION: = 50
+@export var RESOLUTION:int = 50
 @export var ISO_LEVEL := 0.0
 @export var NOISE: FastNoiseLite
 @export var FLAT_SHADED := false
+@export var TERRAIN_TERRACE:int = 0
 
 @export var GENERATE: bool:
 	set(value):
@@ -321,7 +322,7 @@ func generate():
 	for x in range(1, voxel_grid.resolution-1):
 		for y in range(1, voxel_grid.resolution-1):
 			for z in range(1, voxel_grid.resolution-1):
-				var value = NOISE.get_noise_3d(x, y, z)+y/float(voxel_grid.resolution)-0.5
+				var value = NOISE.get_noise_3d(x, y, z)+(y+y%TERRAIN_TERRACE)/float(voxel_grid.resolution)-0.5
 				voxel_grid.write(x, y, z, value)
 	
 	#march
