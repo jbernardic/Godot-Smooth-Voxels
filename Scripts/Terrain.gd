@@ -6,7 +6,7 @@ extends MeshInstance3D
 @export var ISO_LEVEL := 0.0
 @export var NOISE: FastNoiseLite
 @export var FLAT_SHADED := false
-@export var TERRAIN_TERRACE:int = 0
+@export var TERRAIN_TERRACE:int = 1
 
 @export var GENERATE: bool:
 	set(value):
