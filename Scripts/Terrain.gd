@@ -3,8 +3,9 @@ extends MeshInstance3D
 
 @export	var MATERIAL:Material
 @export var RESOLUTION: = 50
-@export var ISO_LEVEL = 0.0
+@export var ISO_LEVEL := 0.0
 @export var NOISE: FastNoiseLite
+@export var FLAT_SHADED := false
 
 @export var GENERATE: bool:
 	set(value):
@@ -320,8 +321,7 @@ func generate():
 	for x in range(1, voxel_grid.resolution-1):
 		for y in range(1, voxel_grid.resolution-1):
 			for z in range(1, voxel_grid.resolution-1):
-				var posy = (y+y%2 )/float(voxel_grid.resolution)
-				var value = posy+NOISE.get_noise_3d(x, y, z)
+				var value = NOISE.get_noise_3d(x, y, z)+y/float(voxel_grid.resolution)-0.5
 				voxel_grid.write(x, y, z, value)
 	
 	#march
@@ -335,8 +335,8 @@ func generate():
 	var surface_tool = SurfaceTool.new()
 	surface_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
 	
-	#remove this for smooth shading
-	surface_tool.set_smooth_group(-1)
+	if FLAT_SHADED:
+		surface_tool.set_smooth_group(-1)
 	
 	for vert in vertices:
 		surface_tool.add_vertex(vert)
